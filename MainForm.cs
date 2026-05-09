@@ -51,6 +51,8 @@ namespace AppLogin
                    // Ponemos el cursor al final para que no salte al inicio al borrar
                    txtTasaDolar.SelectionStart = txtTasaDolar.Text.Length;
                 }
+
+                ActualizarPreciosPlanes();
             };
 
 
@@ -66,6 +68,11 @@ namespace AppLogin
             txtTasaDolar.Leave += (object sender, EventArgs e) => {
                   ActualizarTasa();
             };
+
+            txtTasaDolar.KeyUp += (object sender, KeyEventArgs e) => {
+            // Esto fuerza la actualización de los precios cada vez que presionas y sueltas una tecla
+            ActualizarPreciosPlanes();
+        };
 
             // Agregar al panel
             panelSuperior.Controls.Add(lblTasaTitulo);
@@ -144,13 +151,6 @@ namespace AppLogin
                 AutoSize = true
             };
 
-            txtTasaDolar = new TextBox() {
-                Location = new Point(820, 18),
-                Width = 120,
-                Font = new Font("Arial", 11, FontStyle.Bold),
-                TextAlign = HorizontalAlignment.Center
-            };
-
             panelSuperior.Controls.Add(lblTasaTitulo);
             panelSuperior.Controls.Add(txtTasaDolar);
 
@@ -206,9 +206,18 @@ namespace AppLogin
 
         private void ActualizarPreciosPlanes()
         {
+            // Si la casilla está vacía, mostramos 0 directamente y salimos del método
+            if (string.IsNullOrWhiteSpace(txtTasaDolar.Text))
+            {
+                lblPlanStarter.Text = "Plan Starter: 0.00 Bs";
+                lblPlanPymes.Text = "Plan Pymes: 0.00 Bs";
+                lblPlanCorporativo.Text = "Plan Corporativo: 0.00 Bs";
+                return;
+            }
+
             // Limpiamos el texto de la tasa por si tiene comas
             string tasaTexto = txtTasaDolar.Text.Replace(',', '.');
-    
+
             if (decimal.TryParse(tasaTexto, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out decimal tasa))
             {
                 lblPlanStarter.Text = string.Format("Plan Starter: {0:N2} Bs", 30 * tasa);
