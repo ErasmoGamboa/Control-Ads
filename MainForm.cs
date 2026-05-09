@@ -15,6 +15,10 @@ namespace AppLogin
         private Label lblTasaTitulo;
         private TextBox txtTasaDolar;
 
+        private Label lblPlanStarter;
+        private Label lblPlanPymes;
+        private Label lblPlanCorporativo;
+
         public MainForm()
         {
             this.Text = "Panel de Control - Compurobotik C.A.";
@@ -84,12 +88,14 @@ namespace AppLogin
                   txtTasaDolar.Text = res.ToString("F4", CultureInfo.CurrentCulture);
 
                   MessageBox.Show("Tasa actualizada correctamente", "Compurobotik", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                  ActualizarPreciosPlanes();
                }
 
                else
                {
                    // Si el número es un desastre, lo reseteamos a la tasa anterior
                    txtTasaDolar.Text = TasaDolarManager.ObtenerTasa();
+                   ActualizarPreciosPlanes();
         
                }
             }
@@ -100,6 +106,35 @@ namespace AppLogin
         {
             // Panel Superior
             panelSuperior = new Panel() { Dock = DockStyle.Top, Height = 60, BackColor = Color.FromArgb(45, 45, 45) };
+
+            // --- Planes a la izquierda ---
+            lblPlanStarter = new Label() {
+                Text = "Plan Starter: 0Bs",
+                ForeColor = Color.LightGreen,
+                Font = new Font("Arial", 9, FontStyle.Bold),
+                Location = new Point(15, 5),
+                AutoSize = true
+            };
+
+            lblPlanPymes = new Label() {
+                Text = "Plan Pymes: 0Bs",
+                ForeColor = Color.LightBlue,
+                Font = new Font("Arial", 9, FontStyle.Bold),
+                Location = new Point(15, 22),
+                AutoSize = true
+            };
+
+            lblPlanCorporativo = new Label() {
+                Text = "Plan Corporativo: 0Bs",
+                ForeColor = Color.Gold,
+                Font = new Font("Arial", 9, FontStyle.Bold),
+                Location = new Point(15, 39),
+                AutoSize = true
+            };
+
+            panelSuperior.Controls.Add(lblPlanStarter);
+            panelSuperior.Controls.Add(lblPlanPymes);
+            panelSuperior.Controls.Add(lblPlanCorporativo);
 
             lblTasaTitulo = new Label() {
                 Text = "Tasa Dólar (Bs):",
@@ -172,6 +207,19 @@ namespace AppLogin
             this.Controls.Add(dgvClientes);
             this.Controls.Add(panelSuperior);
             this.Controls.Add(panelInferior);
+        }
+
+        private void ActualizarPreciosPlanes()
+        {
+            // Limpiamos el texto de la tasa por si tiene comas
+            string tasaTexto = txtTasaDolar.Text.Replace(',', '.');
+    
+            if (decimal.TryParse(tasaTexto, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out decimal tasa))
+            {
+                lblPlanStarter.Text = string.Format("Plan Starter: {0:N2} Bs", 30 * tasa);
+                lblPlanPymes.Text = string.Format("Plan Pymes: {0:N2} Bs", 45 * tasa);
+                lblPlanCorporativo.Text = string.Format("Plan Corporativo: {0:N2} Bs", 60 * tasa);
+            }
         }
 
         private void CargarDatosDesdeBD()
