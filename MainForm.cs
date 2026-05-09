@@ -74,7 +74,7 @@ namespace AppLogin
 
         private void ActualizarTasa()
         {
-            if (!string.IsNullOrWhiteSpace(txtTasaDolar.Text)) return;
+            if (string.IsNullOrWhiteSpace(txtTasaDolar.Text)) return;
             {
                // Normalizamos el texto (cambiar coma por punto para el cálculo)
                string textoLimpio = txtTasaDolar.Text.Replace(',', '.');
@@ -149,11 +149,6 @@ namespace AppLogin
                 Width = 120,
                 Font = new Font("Arial", 11, FontStyle.Bold),
                 TextAlign = HorizontalAlignment.Center
-            };
-            
-            // Evento para guardar la tasa automáticamente al cambiarla
-            txtTasaDolar.TextChanged += (s, e) => {
-                TasaDolarManager.GuardarTasa(txtTasaDolar.Text);
             };
 
             panelSuperior.Controls.Add(lblTasaTitulo);
