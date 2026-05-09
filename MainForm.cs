@@ -3,6 +3,7 @@ using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
+using System.Globalization;
 
 namespace AppLogin
 {
@@ -34,7 +35,7 @@ namespace AppLogin
             };
 
             // 1. Bloquear letras (Solo permite números, un separador decimal y teclas de control como borrar)
-            txtTasaDolar.TextChanged += (s, e) => {
+            txtTasaDolar.TextChanged += (object sender, EventArgs e) => {
                 // Solo permite números y un separador decimal (punto o coma)
                 string original = txtTasaDolar.Text;
                 string filtrado = Regex.Replace(original, @"[^0-9.,]", "");
@@ -49,7 +50,7 @@ namespace AppLogin
             };
 
 
-            txtTasaDolar.KeyDown += (s, e) => {
+            txtTasaDolar.KeyDown += (object sender, KeyEventArgs e) => {
                if (e.KeyCode == Keys.Enter) {
                   ActualizarTasa();
                   // Quita el foco del textbox para que se dispare el formato visual
@@ -58,7 +59,7 @@ namespace AppLogin
                 }
             };
 
-            txtTasaDolar.Leave += (s, e) => {
+            txtTasaDolar.Leave += (object sender, EventArgs e) => {
                   ActualizarTasa();
             };
 
@@ -69,7 +70,7 @@ namespace AppLogin
 
         private void ActualizarTasa()
         {
-            if (!string.IsNullOrWhiteSpace(txtTasaDolar.Text))
+            if (!string.IsNullOrWhiteSpace(txtTasaDolar.Text)) return;
             {
                // Normalizamos el texto (cambiar coma por punto para el cálculo)
                string textoLimpio = txtTasaDolar.Text.Replace(',', '.');
@@ -80,12 +81,17 @@ namespace AppLogin
                   TasaDolarManager.GuardarTasa(res.ToString(System.Globalization.CultureInfo.InvariantCulture));
 
                   // Mostramos en el cuadro con 4 decimales exactos
-                  txtTasaDolar.Text = res.ToString("F4");
+                  txtTasaDolar.Text = res.ToString("F4", CultureInfo.CurrentCulture);
 
                   MessageBox.Show("Tasa actualizada correctamente", "Compurobotik", MessageBoxButtons.OK, MessageBoxIcon.Information);
                }
+
+               else
+               {
+                   // Si el número es un desastre, lo reseteamos a la tasa anterior
+                   txtTasaDolar.Text = TasaDolarManager.ObtenerTasa();
         
-               
+               }
             }
         }
 
